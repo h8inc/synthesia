@@ -76,13 +76,14 @@ export default function Slide11Companion() {
           </p>
         </div>
 
-        {/* hero: dock + avatar */}
-        <DockHero bubbleIdx={bubbleIdx} setBubbleIdx={setBubbleIdx} />
-
         {/* three callouts */}
         <div
           className="grid gap-4"
-          style={{ gridTemplateColumns: "repeat(3, 1fr)", marginBottom: 18 }}
+          style={{
+            gridTemplateColumns: "repeat(3, 1fr)",
+            marginTop: 28,
+            marginBottom: 18,
+          }}
         >
           <Callout
             label="WHAT"
@@ -135,27 +136,22 @@ export default function Slide11Companion() {
           </div>
         </motion.div>
 
-        {/* credit */}
-        <div className="flex justify-end" style={{ marginTop: 12 }}>
-          <div
-            style={{
-              fontFamily: fonts.mono,
-              fontSize: 9.5,
-              letterSpacing: "0.08em",
-              color: tokens.muted,
-              fontStyle: "italic",
-            }}
-          >
-            Pattern credit: Lil Agents (Ryan Stephen, MIT) · Lil Lenny (Ben
-            Shih) — desktop companion as a behavioural loop strategy
-          </div>
-        </div>
+        {/* hero: dock + avatar */}
+        <DockHero bubbleIdx={bubbleIdx} setBubbleIdx={setBubbleIdx} />
       </div>
     </>
   );
 }
 
 /* ---------- Hero dock + avatar ---------- */
+
+type ChatStage = "prompt" | "generating" | "done";
+
+const QUICK_PROMPTS = [
+  "Turn my last meeting into a 2-min summary",
+  "Record this quarter's update — you do the talking",
+  "Explain our new feature to customers",
+];
 
 function DockHero({
   bubbleIdx,
@@ -164,14 +160,34 @@ function DockHero({
   bubbleIdx: number;
   setBubbleIdx: (i: number | ((p: number) => number)) => void;
 }) {
+  const [chatOpen, setChatOpen] = useState(false);
+  const [stage, setStage] = useState<ChatStage>("prompt");
+  const [selectedPrompt, setSelectedPrompt] = useState("");
+
+  const openChat = () => {
+    setStage("prompt");
+    setSelectedPrompt("");
+    setChatOpen(true);
+  };
+  const closeChat = () => setChatOpen(false);
+
+  const submitPrompt = (text: string) => {
+    if (!text.trim()) return;
+    setSelectedPrompt(text);
+    setStage("generating");
+    // fake-render then reveal the video card
+    setTimeout(() => setStage("done"), 2400);
+  };
+
   return (
     <div
       className="relative mx-auto"
       style={{
         width: DOCK_WIDTH + 80,
-        marginTop: 64,
-        marginBottom: 72,
+        marginTop: "auto",
+        marginBottom: 0,
         height: 170,
+        transform: "translateY(42px)",
       }}
     >
       {/* desktop wallpaper hint behind dock — soft warm gradient */}
@@ -201,12 +217,591 @@ function DockHero({
         {/* walking avatar + attached bubble — walks continuously */}
         <WalkingAvatar
           bubbleIdx={bubbleIdx}
-          onTap={() =>
-            setBubbleIdx((i: number) => (i + 1) % bubbleLines.length)
-          }
+          paused={chatOpen}
+          onTap={() => {
+            if (chatOpen) {
+              // while chat is open, clicking the avatar just cycles the
+              // attached bubble — but bubble is hidden during chat, so
+              // no-op is fine.
+              setBubbleIdx((i: number) => (i + 1) % bubbleLines.length);
+            } else {
+              openChat();
+            }
+          }}
         />
+
+        {/* chat window — floats above the dock when opened */}
+        <AnimatePresence>
+          {chatOpen && (
+            <ChatWindow
+              stage={stage}
+              selectedPrompt={selectedPrompt}
+              onClose={closeChat}
+              onSubmitPrompt={submitPrompt}
+              onReset={() => {
+                setStage("prompt");
+                setSelectedPrompt("");
+              }}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+/* ---------- Chat window (popup demo) ---------- */
+
+function ChatWindow({
+  stage,
+  selectedPrompt,
+  onClose,
+  onSubmitPrompt,
+  onReset,
+}: {
+  stage: ChatStage;
+  selectedPrompt: string;
+  onClose: () => void;
+  onSubmitPrompt: (text: string) => void;
+  onReset: () => void;
+}) {
+  const [typed, setTyped] = useState("");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.94 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 10, scale: 0.96 }}
+      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+      className="absolute"
+      style={{
+        width: 440,
+        bottom: DOCK_HEIGHT + 22,
+        left: "50%",
+        transform: "translateX(-50%)",
+        transformOrigin: "bottom center",
+        borderRadius: 14,
+        background: "#fff",
+        border: "1px solid rgba(31,29,26,0.08)",
+        boxShadow: [
+          "0 1px 0 rgba(255,255,255,0.9) inset",
+          "0 24px 56px rgba(31, 29, 26, 0.22)",
+          "0 6px 14px rgba(31, 29, 26, 0.10)",
+        ].join(", "),
+        overflow: "hidden",
+        zIndex: 10,
+      }}
+    >
+      {/* mac window chrome */}
+      <div
+        className="flex items-center"
+        style={{
+          height: 30,
+          padding: "0 12px",
+          background:
+            "linear-gradient(180deg, rgba(245,244,241,0.95), rgba(232,229,222,0.95))",
+          borderBottom: "1px solid rgba(31,29,26,0.06)",
+          position: "relative",
+          flexShrink: 0,
+        }}
+      >
+        <div className="flex items-center gap-[6px]">
+          <TrafficLight color="#ff5f57" onClick={onClose} />
+          <TrafficLight color="#febc2e" />
+          <TrafficLight color="#28c840" />
+        </div>
+        <div
+          className="absolute left-1/2 -translate-x-1/2"
+          style={{
+            fontFamily:
+              "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif",
+            fontSize: 11.5,
+            fontWeight: 500,
+            color: "rgba(31,29,26,0.64)",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          Synthesia
+        </div>
+      </div>
+
+      {/* content */}
+      <div style={{ padding: "14px 16px 16px" }}>
+        <AnimatePresence mode="wait">
+          {stage === "prompt" && (
+            <motion.div
+              key="prompt"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChatGreeting />
+              <div className="flex flex-col gap-[6px]" style={{ marginTop: 12 }}>
+                {QUICK_PROMPTS.map((p) => (
+                  <PromptChip
+                    key={p}
+                    text={p}
+                    onClick={() => onSubmitPrompt(p)}
+                  />
+                ))}
+              </div>
+              <ChatInput
+                value={typed}
+                onChange={setTyped}
+                onSubmit={() => {
+                  onSubmitPrompt(typed);
+                  setTyped("");
+                }}
+              />
+            </motion.div>
+          )}
+
+          {stage === "generating" && (
+            <motion.div
+              key="generating"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <UserMessage text={selectedPrompt} />
+              <div style={{ height: 10 }} />
+              <AvatarMessage>
+                <div>On it — rendering now.</div>
+                <FakeProgressBar />
+              </AvatarMessage>
+            </motion.div>
+          )}
+
+          {stage === "done" && (
+            <motion.div
+              key="done"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22 }}
+            >
+              <UserMessage text={selectedPrompt} />
+              <div style={{ height: 10 }} />
+              <AvatarMessage>
+                Done — 2 m 14 s rendered in 38 s. Ready to share.
+              </AvatarMessage>
+              <VideoCard prompt={selectedPrompt} />
+              <div
+                className="flex items-center gap-2"
+                style={{ marginTop: 10 }}
+              >
+                <GhostButton onClick={onReset}>New video</GhostButton>
+                <PrimaryButton>Share</PrimaryButton>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+function TrafficLight({
+  color,
+  onClick,
+}: {
+  color: string;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label="close"
+      style={{
+        width: 12,
+        height: 12,
+        borderRadius: "50%",
+        background: color,
+        border: "1px solid rgba(0,0,0,0.08)",
+        padding: 0,
+        cursor: onClick ? "pointer" : "default",
+      }}
+    />
+  );
+}
+
+function ChatGreeting() {
+  return (
+    <div className="flex items-start gap-[10px]">
+      <AvatarBubbleHead />
+      <div
+        style={{
+          fontFamily: fonts.serif,
+          fontSize: 13.5,
+          lineHeight: 1.45,
+          color: tokens.ink,
+          paddingTop: 2,
+        }}
+      >
+        <div style={{ fontWeight: 500 }}>Hey 👋</div>
+        <div style={{ color: tokens.inkSoft, marginTop: 1 }}>
+          What video do you want to make?
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AvatarBubbleHead() {
+  return (
+    <div
+      style={{
+        width: 30,
+        height: 30,
+        borderRadius: "50%",
+        background: `linear-gradient(145deg, #6366f1, #4338ca)`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 2px 6px rgba(79,70,229,0.3)",
+        flexShrink: 0,
+      }}
+    >
+      <svg viewBox="0 0 30 30" width="30" height="30">
+        <circle cx="15" cy="12" r="4.2" fill="#fff" opacity="0.95" />
+        <path
+          d="M7 24 Q7 18 15 18 Q23 18 23 24 Z"
+          fill="#fff"
+          opacity="0.95"
+        />
+      </svg>
+    </div>
+  );
+}
+
+function PromptChip({
+  text,
+  onClick,
+}: {
+  text: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="text-left"
+      style={{
+        padding: "8px 12px",
+        borderRadius: 10,
+        background: "rgba(79, 70, 229, 0.06)",
+        border: "1px solid rgba(79, 70, 229, 0.14)",
+        color: tokens.ink,
+        fontFamily: fonts.serif,
+        fontSize: 12.5,
+        lineHeight: 1.35,
+        cursor: "pointer",
+        transition: "background 0.15s, border-color 0.15s",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = "rgba(79, 70, 229, 0.1)";
+        e.currentTarget.style.borderColor = "rgba(79, 70, 229, 0.25)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "rgba(79, 70, 229, 0.06)";
+        e.currentTarget.style.borderColor = "rgba(79, 70, 229, 0.14)";
+      }}
+    >
+      {text}
+    </button>
+  );
+}
+
+function ChatInput({
+  value,
+  onChange,
+  onSubmit,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <div
+      className="flex items-center gap-2"
+      style={{
+        marginTop: 12,
+        padding: "6px 6px 6px 12px",
+        borderRadius: 12,
+        background: "#f5f4f1",
+        border: "1px solid rgba(31,29,26,0.08)",
+      }}
+    >
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSubmit();
+        }}
+        placeholder="Type a prompt…"
+        style={{
+          flex: 1,
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          fontFamily: fonts.serif,
+          fontSize: 12.5,
+          color: tokens.ink,
+        }}
+      />
+      <button
+        onClick={onSubmit}
+        aria-label="send"
+        style={{
+          width: 26,
+          height: 26,
+          borderRadius: 8,
+          background: SYNTH_BLUE,
+          color: "#fff",
+          border: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          fontSize: 14,
+          lineHeight: 1,
+        }}
+      >
+        ↑
+      </button>
+    </div>
+  );
+}
+
+function UserMessage({ text }: { text: string }) {
+  return (
+    <div className="flex justify-end">
+      <div
+        style={{
+          maxWidth: "78%",
+          padding: "7px 11px",
+          borderRadius: 12,
+          background: "#f2efe8",
+          border: "1px solid rgba(31,29,26,0.06)",
+          fontFamily: fonts.serif,
+          fontSize: 12.5,
+          lineHeight: 1.4,
+          color: tokens.ink,
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  );
+}
+
+function AvatarMessage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-[10px]">
+      <AvatarBubbleHead />
+      <div
+        style={{
+          flex: 1,
+          padding: "7px 11px",
+          borderRadius: 12,
+          background: SYNTH_BLUE,
+          color: "#fff",
+          fontFamily: fonts.serif,
+          fontSize: 12.5,
+          lineHeight: 1.45,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function FakeProgressBar() {
+  return (
+    <div
+      style={{
+        marginTop: 8,
+        height: 4,
+        borderRadius: 2,
+        background: "rgba(255,255,255,0.25)",
+        overflow: "hidden",
+      }}
+    >
+      <motion.div
+        initial={{ width: "0%" }}
+        animate={{ width: "100%" }}
+        transition={{ duration: 2.3, ease: "easeInOut" }}
+        style={{
+          height: "100%",
+          background: "#fff",
+          borderRadius: 2,
+        }}
+      />
+    </div>
+  );
+}
+
+function VideoCard({ prompt }: { prompt: string }) {
+  const title = prompt.length > 42 ? prompt.slice(0, 40) + "…" : prompt;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: 0.1 }}
+      style={{
+        marginTop: 10,
+        borderRadius: 10,
+        background: "#0b0b0e",
+        border: "1px solid rgba(31,29,26,0.1)",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      {/* fake video thumbnail */}
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: 120,
+          background:
+            "linear-gradient(135deg, #312e81 0%, #4f46e5 40%, #8b3a2e 100%)",
+        }}
+      >
+        {/* faux avatar in frame */}
+        <div
+          style={{
+            position: "absolute",
+            right: 18,
+            bottom: 0,
+            width: 72,
+            height: 96,
+          }}
+        >
+          <svg viewBox="0 0 72 96" width="72" height="96">
+            <ellipse cx="36" cy="34" rx="16" ry="17" fill="#dcb898" />
+            <path
+              d="M22 32 Q22 16 36 16 Q50 16 50 32 Q48 26 44 24 Q38 28 36 28 Q34 28 28 24 Q24 26 22 32 Z"
+              fill="#1f1812"
+            />
+            <path
+              d="M12 96 L12 68 Q12 56 24 54 L36 58 L48 54 Q60 56 60 68 L60 96 Z"
+              fill="#1f2937"
+            />
+            <path
+              d="M32 54 L36 70 L40 54 Z"
+              fill="#f4f1ea"
+            />
+          </svg>
+        </div>
+        {/* play button */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.9)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          }}
+        >
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: "12px solid #1f1812",
+              borderTop: "8px solid transparent",
+              borderBottom: "8px solid transparent",
+              marginLeft: 3,
+            }}
+          />
+        </div>
+        {/* duration chip */}
+        <div
+          style={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            padding: "2px 6px",
+            borderRadius: 4,
+            background: "rgba(0,0,0,0.55)",
+            color: "#fff",
+            fontFamily: fonts.mono,
+            fontSize: 10,
+            letterSpacing: "0.04em",
+          }}
+        >
+          2:14
+        </div>
+      </div>
+      {/* title row */}
+      <div
+        style={{
+          padding: "8px 11px",
+          fontFamily:
+            "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif",
+          fontSize: 11.5,
+          color: "#e5e5ea",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <span style={{ fontWeight: 500 }}>{title}</span>
+        <span style={{ color: "#8e8e93" }}>.mp4</span>
+      </div>
+    </motion.div>
+  );
+}
+
+function GhostButton({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: "6px 12px",
+        borderRadius: 8,
+        background: "transparent",
+        border: "1px solid rgba(31,29,26,0.12)",
+        fontFamily: fonts.serif,
+        fontSize: 12,
+        color: tokens.ink,
+        cursor: "pointer",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function PrimaryButton({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      style={{
+        padding: "6px 12px",
+        borderRadius: 8,
+        background: SYNTH_BLUE,
+        color: "#fff",
+        border: "none",
+        fontFamily: fonts.serif,
+        fontSize: 12,
+        cursor: "pointer",
+      }}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -511,9 +1106,11 @@ function IconArt({ kind }: { kind: IconKind }) {
 
 function WalkingAvatar({
   bubbleIdx,
+  paused,
   onTap,
 }: {
   bubbleIdx: number;
+  paused?: boolean;
   onTap: () => void;
 }) {
   // Walk cycle: walk-right -> pause+turn at right border ->
@@ -527,14 +1124,31 @@ function WalkingAvatar({
   const figureRef = useRef<HTMLDivElement | null>(null);
   const phaseRef = useRef(0.5);
   const figureEl = useRef<{ setPhase: (p: number) => void } | null>(null);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
 
   useEffect(() => {
     const range = DOCK_WIDTH - AVATAR_SIZE - WALK_PADDING * 2;
     const cycle = WALK_DURATION * 2 + TURN_DURATION * 2;
     let raf = 0;
     const start = performance.now();
+    let pausedElapsed = 0; // accumulated paused time (so walk resumes where it stopped)
+    let lastPausedAt: number | null = null;
 
     const tick = (now: number) => {
+      // If paused, freeze the walk-cycle clock by accumulating elapsed-pause.
+      if (pausedRef.current) {
+        if (lastPausedAt === null) lastPausedAt = now;
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      if (lastPausedAt !== null) {
+        pausedElapsed += now - lastPausedAt;
+        lastPausedAt = null;
+      }
+      now = now - pausedElapsed;
+      // intentional shadowing of `now` so original variable name below
+      // reads as "effective animation time".
       const t = ((now - start) / 1000) % cycle;
 
       let x: number;
@@ -604,8 +1218,10 @@ function WalkingAvatar({
       }}
       aria-label="Synthesia desktop companion"
     >
-      {/* mini bubble that rides above the avatar's head */}
-      <AttachedBubble bubbleIdx={bubbleIdx} />
+      {/* mini bubble that rides above the avatar's head — hidden when chat is open */}
+      <AnimatePresence>
+        {!paused && <AttachedBubble bubbleIdx={bubbleIdx} />}
+      </AnimatePresence>
 
       {/* figure bobs + flips; wrapped so the bubble above stays upright */}
       <div
