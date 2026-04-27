@@ -164,15 +164,12 @@ export default function Slide08Pipeline({
   totalSlides?: number;
 } = {}) {
   const [momentFilter, setMomentFilter] = useState<Moment | "all">("all");
-  const [typeFilter, setTypeFilter] = useState<ExType | "all">("all");
   const [sortKey, setSortKey] = useState<SortKey>("rice");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const rows = useMemo(() => {
     const filtered = experiments.filter(
-      (e) =>
-        (momentFilter === "all" || e.moment === momentFilter) &&
-        (typeFilter === "all" || e.type === typeFilter)
+      (e) => momentFilter === "all" || e.moment === momentFilter
     );
     const dir = sortDir === "asc" ? 1 : -1;
     return [...filtered].sort((a, b) => {
@@ -193,7 +190,7 @@ export default function Slide08Pipeline({
         }
       }
     });
-  }, [momentFilter, typeFilter, sortKey, sortDir]);
+  }, [momentFilter, sortKey, sortDir]);
 
   const toggleSort = (k: SortKey) => {
     if (k === sortKey) {
@@ -213,48 +210,33 @@ export default function Slide08Pipeline({
         total={totalSlides}
       />
 
-      <div className="mb-5" style={{ maxWidth: 900 }}>
+      <div className="mb-3" style={{ maxWidth: 920 }}>
         <h2
           style={{
             fontFamily: fonts.serif,
-            fontSize: "clamp(28px, 3.2vw, 42px)",
+            fontSize: "clamp(22px, 2.4vw, 34px)",
             fontWeight: 400,
-            lineHeight: 1.1,
+            lineHeight: 1.15,
             letterSpacing: "-0.02em",
             color: tokens.ink,
-            marginBottom: 14,
+            margin: 0,
           }}
         >
-          Three bets on a ladder.
-          <br />
-          Underneath them —{" "}
+          Three bets on a ladder —{" "}
           <em style={{ color: tokens.accent, fontStyle: "italic" }}>
             eleven experiments
           </em>
           , each with a metric.
         </h2>
-        <p
-          style={{
-            fontFamily: fonts.serif,
-            fontSize: 14,
-            lineHeight: 1.55,
-            color: tokens.inkSoft,
-          }}
-        >
-          The pipeline reads left-to-right: each experiment is tagged to the
-          activation moment it moves (Setup, Aha, Habit) and the Reforge metric
-          underneath it. Idea 01 maps to E11. Idea 02 maps to E7. Idea 03 is E10 —
-          the Type 1 bet.
-        </p>
       </div>
 
       {/* metric hierarchy */}
       <div
-        className="grid mb-5"
+        className="grid mb-3"
         style={{
           gridTemplateColumns: "repeat(4, 1fr)",
-          gap: 12,
-          padding: "14px 18px",
+          gap: 8,
+          padding: "10px 14px",
           border: `1px solid ${tokens.rule}`,
           background: tokens.paper,
         }}
@@ -291,62 +273,6 @@ export default function Slide08Pipeline({
           highlight={false}
           tone={tokens.gold}
         />
-      </div>
-
-      {/* filter row */}
-      <div
-        className="flex items-center gap-3 mb-3"
-        style={{
-          fontFamily: fonts.mono,
-          fontSize: 10,
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          color: tokens.muted,
-        }}
-      >
-        <span>Filter type:</span>
-        <FilterPill
-          label="All"
-          active={typeFilter === "all"}
-          onClick={() => setTypeFilter("all")}
-        />
-        <FilterPill
-          label="Type 1"
-          active={typeFilter === "t1"}
-          onClick={() => setTypeFilter("t1")}
-          accent={tokens.accent}
-        />
-        <FilterPill
-          label="Type 2"
-          active={typeFilter === "t2"}
-          onClick={() => setTypeFilter("t2")}
-          accent={tokens.sage}
-        />
-        <span className="ml-4">
-          {rows.length} of {experiments.length} shown
-        </span>
-        {(momentFilter !== "all" || typeFilter !== "all") && (
-          <button
-            onClick={() => {
-              setMomentFilter("all");
-              setTypeFilter("all");
-            }}
-            style={{
-              marginLeft: "auto",
-              fontFamily: fonts.mono,
-              fontSize: 10,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: tokens.accent,
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-          >
-            clear filters
-          </button>
-        )}
       </div>
 
       {/* table */}
@@ -523,24 +449,45 @@ export default function Slide08Pipeline({
         </table>
       </div>
 
-      <div
-        className="mt-5 pt-4"
+      <details
+        className="mt-2"
         style={{
           borderTop: `1px dashed ${tokens.rule}`,
-          fontFamily: fonts.mono,
-          fontSize: 10.5,
-          color: tokens.muted,
-          letterSpacing: "0.05em",
-          lineHeight: 1.6,
+          paddingTop: 6,
         }}
       >
-        <strong style={{ color: tokens.inkSoft, fontWeight: 500 }}>RICE —</strong>{" "}
-        Reach (1–10, weekly users touched) · Impact (0.25 / 0.5 / 1 / 2 / 3) ·
-        Confidence (0–1) ÷ Effort (person-months).{" "}
-        <strong style={{ color: tokens.inkSoft, fontWeight: 500 }}>Size —</strong>{" "}
-        XS ≈ hours · S ≈ days · M ≈ a week · L ≈ two-plus weeks · XL ≈ quarter.
-        Numbers are directional, calibrated together — not precise.
-      </div>
+        <summary
+          style={{
+            fontFamily: fonts.mono,
+            fontSize: 9.5,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: tokens.muted,
+            cursor: "pointer",
+            listStyle: "none",
+            userSelect: "none",
+          }}
+        >
+          RICE & size legend
+        </summary>
+        <div
+          style={{
+            marginTop: 8,
+            fontFamily: fonts.mono,
+            fontSize: 10,
+            color: tokens.muted,
+            letterSpacing: "0.04em",
+            lineHeight: 1.55,
+          }}
+        >
+          <strong style={{ color: tokens.inkSoft, fontWeight: 500 }}>RICE —</strong>{" "}
+          Reach (1–10, weekly users touched) · Impact (0.25 / 0.5 / 1 / 2 / 3) ·
+          Confidence (0–1) ÷ Effort (person-months).{" "}
+          <strong style={{ color: tokens.inkSoft, fontWeight: 500 }}>Size —</strong>{" "}
+          XS ≈ hours · S ≈ days · M ≈ a week · L ≈ two-plus weeks · XL ≈ quarter.
+          Numbers are directional, calibrated together — not precise.
+        </div>
+      </details>
     </>
   );
 }
@@ -553,12 +500,12 @@ const thStyle: React.CSSProperties = {
   textTransform: "uppercase",
   color: tokens.muted,
   textAlign: "left",
-  padding: "10px 12px 10px 0",
+  padding: "8px 10px 8px 0",
   borderBottom: `1px solid ${tokens.ink}`,
 };
 
 const tdStyle: React.CSSProperties = {
-  padding: "14px 12px 14px 0",
+  padding: "10px 10px 10px 0",
   borderBottom: `1px solid ${tokens.rule}`,
   verticalAlign: "top",
   lineHeight: 1.4,
@@ -732,35 +679,3 @@ function MetricBox({
   );
 }
 
-function FilterPill({
-  label,
-  active,
-  onClick,
-  accent,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  accent?: string;
-}) {
-  const color = accent ?? tokens.ink;
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        fontFamily: fonts.mono,
-        fontSize: 10,
-        letterSpacing: "0.1em",
-        textTransform: "uppercase",
-        padding: "4px 10px",
-        background: active ? color : "transparent",
-        color: active ? tokens.bg : color,
-        border: `1px solid ${color}`,
-        borderRadius: 2,
-        cursor: "pointer",
-      }}
-    >
-      {label}
-    </button>
-  );
-}

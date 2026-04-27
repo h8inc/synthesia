@@ -40,7 +40,7 @@ function useHashSlideMinimal(defaultSlide = 1) {
 }
 
 function AppendixHint({ slide }: { slide: number }) {
-  if (slide < 7) return null;
+  if (slide < 8) return null;
   return (
     <div
       className="mb-4 flex-shrink-0"
@@ -52,7 +52,7 @@ function AppendixHint({ slide }: { slide: number }) {
         color: tokens.muted,
       }}
     >
-      Appendix · slides 7–9
+      Appendix · slides 8–9
     </div>
   );
 }
@@ -100,10 +100,10 @@ export default function AppMinimal() {
         />
       )}
       {slide === 6 && (
-        <Slide10Close slideNum={6} totalSlides={TOTAL} />
+        <Slide08Pipeline slideNum={6} totalSlides={TOTAL} />
       )}
       {slide === 7 && (
-        <Slide08Pipeline slideNum={7} totalSlides={TOTAL} />
+        <Slide10Close slideNum={7} totalSlides={TOTAL} />
       )}
       {slide === 8 && (
         <Slide09Frame slideNum={8} totalSlides={TOTAL} />
