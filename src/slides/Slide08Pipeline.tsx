@@ -222,11 +222,10 @@ export default function Slide08Pipeline({
             margin: 0,
           }}
         >
-          Three bets on a ladder —{" "}
+          3 bets —{" "}
           <em style={{ color: tokens.accent, fontStyle: "italic" }}>
-            eleven experiments
+            11 experiments
           </em>
-          , each with a metric.
         </h2>
       </div>
 
