@@ -274,12 +274,19 @@ export default function Slide08Pipeline({
         />
       </div>
 
-      {/* table */}
-      <div style={{ width: "100%", overflowX: "auto" }}>
+      {/* table — separate collapse so thead position:sticky works; y-scroll stays on slide shell */}
+      <div
+        style={{
+          width: "100%",
+          overflowX: "auto",
+          overflowY: "visible",
+        }}
+      >
         <table
           style={{
             width: "100%",
-            borderCollapse: "collapse",
+            borderCollapse: "separate",
+            borderSpacing: 0,
             fontSize: 13.5,
           }}
         >
@@ -287,7 +294,7 @@ export default function Slide08Pipeline({
             <tr>
               <Th k="id" label="#" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <th
-                style={thStyle}
+                style={thStickyStyle}
                 className="text-left"
               >
                 Experiment
@@ -320,7 +327,7 @@ export default function Slide08Pipeline({
                 sortDir={sortDir}
                 onSort={toggleSort}
               />
-              <th style={thStyle} className="text-left">
+              <th style={thStickyStyle} className="text-left">
                 Primary metric
               </th>
             </tr>
@@ -447,46 +454,6 @@ export default function Slide08Pipeline({
           </LayoutGroup>
         </table>
       </div>
-
-      <details
-        className="mt-2"
-        style={{
-          borderTop: `1px dashed ${tokens.rule}`,
-          paddingTop: 6,
-        }}
-      >
-        <summary
-          style={{
-            fontFamily: fonts.mono,
-            fontSize: 9.5,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: tokens.muted,
-            cursor: "pointer",
-            listStyle: "none",
-            userSelect: "none",
-          }}
-        >
-          RICE & size legend
-        </summary>
-        <div
-          style={{
-            marginTop: 8,
-            fontFamily: fonts.mono,
-            fontSize: 10,
-            color: tokens.muted,
-            letterSpacing: "0.04em",
-            lineHeight: 1.55,
-          }}
-        >
-          <strong style={{ color: tokens.inkSoft, fontWeight: 500 }}>RICE —</strong>{" "}
-          Reach (1–10, weekly users touched) · Impact (0.25 / 0.5 / 1 / 2 / 3) ·
-          Confidence (0–1) ÷ Effort (person-months).{" "}
-          <strong style={{ color: tokens.inkSoft, fontWeight: 500 }}>Size —</strong>{" "}
-          XS ≈ hours · S ≈ days · M ≈ a week · L ≈ two-plus weeks · XL ≈ quarter.
-          Numbers are directional, calibrated together — not precise.
-        </div>
-      </details>
     </>
   );
 }
@@ -501,6 +468,15 @@ const thStyle: React.CSSProperties = {
   textAlign: "left",
   padding: "8px 10px 8px 0",
   borderBottom: `1px solid ${tokens.ink}`,
+};
+
+/** Sticks to slide shell scrollport (`SlideShell` body is overflow-y-auto). */
+const thStickyStyle: React.CSSProperties = {
+  ...thStyle,
+  position: "sticky",
+  top: 0,
+  zIndex: 2,
+  backgroundColor: tokens.bg,
 };
 
 const tdStyle: React.CSSProperties = {
@@ -534,7 +510,7 @@ function Th({
 }) {
   const active = sortKey === k;
   return (
-    <th style={thStyle} className="text-left">
+    <th style={thStickyStyle} className="text-left">
       <button
         onClick={() => onSort(k)}
         style={{
