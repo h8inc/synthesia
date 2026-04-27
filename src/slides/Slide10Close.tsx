@@ -62,19 +62,16 @@ export default function Slide10Close({
             style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
           >
             <HorizonCard
-              label="This sprint"
-              title="Idea 02 — Share as primary"
-              body="No-brainer. XS effort. Enables attribution on the distribution loop. No compute exposure."
+              title="Share rate · attributed loop"
+              body="UTM on every outbound video. Move share from buried menu to primary habit — prove distribution compounds before you scale top-of-funnel."
             />
             <HorizonCard
-              label="Next 30 days"
-              title="Idea 01 — Assistant on app home"
-              body="A/B vs templates. De-risks the interface half of Idea 03 at zero compute cost. Real signal from real users."
+              title="Video completion · time-to-first-video"
+              body="Prompt-first vs templates in-app, no new anonymous compute. Aha only counts when the first output is watched end-to-end."
             />
             <HorizonCard
-              label="Next quarter"
-              title="Idea 03 — Homepage prompt box"
-              body="The Type 1 bet. Only ship once Idea 01 proves the interface and we have unit-economics from Brian."
+              title="Signups from shares · LTV / payback"
+              body="Homepage creation is the Type 1 bet only after interface and cost-per-render are clear — optimise for quality of signup, not volume at the door."
               accent
             />
           </div>
@@ -106,12 +103,10 @@ export default function Slide10Close({
 }
 
 function HorizonCard({
-  label,
   title,
   body,
   accent,
 }: {
-  label: string;
   title: string;
   body: string;
   accent?: boolean;
@@ -126,18 +121,6 @@ function HorizonCard({
           : `1px solid ${tokens.rule}`,
       }}
     >
-      <div
-        className="mb-2"
-        style={{
-          fontFamily: fonts.mono,
-          fontSize: 12,
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          color: accent ? tokens.accent : tokens.muted,
-        }}
-      >
-        {label}
-      </div>
       <div
         className="mb-2"
         style={{

@@ -92,20 +92,20 @@ export default function Slide11Companion({
 
       <div className="flex-1 flex flex-col" style={{ paddingTop: 4 }}>
         {/* headline + subhead */}
-        <div style={{ maxWidth: 980 }}>
+        <div style={{ maxWidth: 1180 }}>
           <h2
             className="mb-6"
             style={{
               fontFamily: fonts.serif,
-              fontSize: "clamp(32px, 3.8vw, 50px)",
+              fontSize: "clamp(22px, 2.5vw, 40px)",
               fontWeight: 300,
               letterSpacing: "-0.025em",
               lineHeight: 1.05,
               color: tokens.ink,
               width: "100%",
+              whiteSpace: "nowrap",
             }}
           >
-        
             The{" "}
             <em style={{ color: tokens.accent, fontStyle: "italic" }}>
               retention surface
@@ -118,7 +118,7 @@ export default function Slide11Companion({
               fontSize: 15,
               lineHeight: 1.55,
               color: tokens.inkSoft,
-              maxWidth: 820,
+              maxWidth: "100%",
             }}
           >
             Half my product-design day is 2-minute Slack rambles to engineers
