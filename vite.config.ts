@@ -10,7 +10,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
-        minimal: path.resolve(__dirname, 'index-minimal.html'),
+        full: path.resolve(__dirname, 'full.html'),
       },
     },
   },
