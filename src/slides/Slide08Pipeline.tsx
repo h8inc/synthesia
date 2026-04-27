@@ -156,7 +156,13 @@ type SortDir = "asc" | "desc";
 const sizeRank: Record<Size, number> = { XS: 0, S: 1, M: 2, L: 3, XL: 4 };
 const momentRank: Record<Moment, number> = { setup: 0, aha: 1, habit: 2 };
 
-export default function Slide08Pipeline() {
+export default function Slide08Pipeline({
+  slideNum = 8,
+  totalSlides = 11,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+} = {}) {
   const [momentFilter, setMomentFilter] = useState<Moment | "all">("all");
   const [typeFilter, setTypeFilter] = useState<ExType | "all">("all");
   const [sortKey, setSortKey] = useState<SortKey>("rice");
@@ -203,8 +209,8 @@ export default function Slide08Pipeline() {
       <SlideHeader
         eyebrow="Pipeline"
         meta="Type 1 & Type 2 experiments, mapped to activation moments"
-        num={8}
-        total={11}
+        num={slideNum}
+        total={totalSlides}
       />
 
       <div className="mb-5" style={{ maxWidth: 900 }}>

@@ -60,7 +60,11 @@ const panels: Panel[] = [
   },
 ];
 
-export default function Slide01Journey() {
+export default function Slide01Journey({
+  showFooter = true,
+}: {
+  showFooter?: boolean;
+} = {}) {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
@@ -153,22 +157,24 @@ export default function Slide01Journey() {
       </div>
 
       {/* cover footer */}
-      <div
-        className="flex justify-between items-end mt-7 pt-[14px]"
-        style={{
-          borderTop: `1px solid ${tokens.rule}`,
-          fontFamily: fonts.mono,
-          fontSize: 10.5,
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          color: tokens.muted,
-        }}
-      >
-        <span>
-          Journey · Depletion · Activation Map · Ideas · Prototype · Questions · Pipeline · Frame · Close
-        </span>
-        <span>← → to advance</span>
-      </div>
+      {showFooter && (
+        <div
+          className="flex justify-between items-end mt-7 pt-[14px]"
+          style={{
+            borderTop: `1px solid ${tokens.rule}`,
+            fontFamily: fonts.mono,
+            fontSize: 10.5,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: tokens.muted,
+          }}
+        >
+          <span>
+            Journey · Depletion · Activation Map · Ideas · Prototype · Questions · Pipeline · Frame · Close
+          </span>
+          <span>← → to advance</span>
+        </div>
+      )}
     </div>
   );
 }

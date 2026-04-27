@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:minimal": "vite --open /index-minimal.html",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -68,18 +68,6 @@ export function JourneyPanel({
       }}
     >
       <div
-        className="absolute top-[8px] right-[10px]"
-        style={{
-          fontFamily: fonts.mono,
-          fontSize: 9.5,
-          letterSpacing: "0.1em",
-          color: tokens.muted,
-        }}
-      >
-        {panel.num} / 05
-      </div>
-
-      <div
         className="flex flex-col justify-center gap-1 relative overflow-hidden"
         style={{
           height: 90,

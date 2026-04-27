@@ -48,7 +48,13 @@ const shuffleSets = [
   ],
 ];
 
-export default function Slide04AssistantHome() {
+export default function Slide04AssistantHome({
+  slideNum = 4,
+  totalSlides = 11,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+} = {}) {
   const [shuffleIdx, setShuffleIdx] = useState(0);
   const [prompt, setPrompt] = useState("");
 
@@ -59,8 +65,8 @@ export default function Slide04AssistantHome() {
       <SlideHeader
         eyebrow="Idea 01"
         meta="Promote the Assistant to the in-app home — collapse the templates"
-        num={4}
-        total={11}
+        num={slideNum}
+        total={totalSlides}
       />
 
       <div

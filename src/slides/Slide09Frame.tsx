@@ -42,14 +42,20 @@ const principles: Principle[] = [
   },
 ];
 
-export default function Slide09Frame() {
+export default function Slide09Frame({
+  slideNum = 9,
+  totalSlides = 11,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+} = {}) {
   return (
     <>
       <SlideHeader
         eyebrow="How I'd run it"
         meta="The principle, stated plainly"
-        num={9}
-        total={11}
+        num={slideNum}
+        total={totalSlides}
       />
 
       <h2

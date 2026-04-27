@@ -46,15 +46,25 @@ const questions: QCard[] = [
   },
 ];
 
-export default function Slide07OpenQuestions() {
+export default function Slide07OpenQuestions({
+  slideNum = 7,
+  totalSlides = 11,
+  hideHeader = false,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+  hideHeader?: boolean;
+} = {}) {
   return (
     <>
-      <SlideHeader
-        eyebrow="Open questions"
-        meta="What I'd need to know before committing to Idea 03"
-        num={7}
-        total={11}
-      />
+      {!hideHeader && (
+        <SlideHeader
+          eyebrow="Open questions"
+          meta="What I'd need to know before committing to Idea 03"
+          num={slideNum}
+          total={totalSlides}
+        />
+      )}
 
       <h2
         style={{

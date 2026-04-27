@@ -44,7 +44,13 @@ const videos: VideoRow[] = [
   },
 ];
 
-export default function Slide05ShareCta() {
+export default function Slide05ShareCta({
+  slideNum = 5,
+  totalSlides = 11,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+} = {}) {
   const [showCurrent, setShowCurrent] = useState(false);
 
   return (
@@ -52,8 +58,8 @@ export default function Slide05ShareCta() {
       <SlideHeader
         eyebrow="Idea 02"
         meta="Surface Share — the Habit CTA currently buried in a right-click menu"
-        num={5}
-        total={11}
+        num={slideNum}
+        total={totalSlides}
       />
 
       <div
@@ -143,7 +149,7 @@ export default function Slide05ShareCta() {
                 <>
                   Loom's video <em>is</em> the invitation — Synthesia's isn't yet
                 </>,
-                "Shared videos likely drive signups we aren't attributing",
+                "Do shared videos drive signups we're under-attributing?",
               ]}
             />
           </ProtoSection>

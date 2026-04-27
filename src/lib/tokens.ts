@@ -11,6 +11,7 @@ export const tokens = {
   gold: "#a07a2d",
   drain: "#c26358",
   gain: "#7a9e6e",
+  insight: "#4f46e5",
 } as const;
 
 export const fonts = {

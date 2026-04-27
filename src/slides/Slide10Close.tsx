@@ -1,14 +1,20 @@
 import { tokens, fonts } from "../lib/tokens";
 import { SlideHeader } from "../components/SlideShell";
 
-export default function Slide10Close() {
+export default function Slide10Close({
+  slideNum = 10,
+  totalSlides = 11,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+} = {}) {
   return (
     <>
       <SlideHeader
         eyebrow="Close"
         meta="What I'm arguing for"
-        num={10}
-        total={11}
+        num={slideNum}
+        total={totalSlides}
       />
 
       <div

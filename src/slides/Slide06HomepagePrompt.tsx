@@ -14,11 +14,17 @@ const PROTO_URL = "https://designs.magicpath.ai/v1/safely-light-7682";
 type Props = {
   overlayOpen: boolean;
   setOverlayOpen: (v: boolean) => void;
+  slideNum?: number;
+  totalSlides?: number;
+  headerMeta?: string;
 };
 
 export default function Slide06HomepagePrompt({
   overlayOpen,
   setOverlayOpen,
+  slideNum = 6,
+  totalSlides = 11,
+  headerMeta = "Move video creation to the marketing homepage — the Type 1 bet",
 }: Props) {
   const [overlayLoaded, setOverlayLoaded] = useState(false);
 
@@ -49,9 +55,9 @@ export default function Slide06HomepagePrompt({
     <>
       <SlideHeader
         eyebrow="Idea 03"
-        meta="Move video creation to the marketing homepage — the Type 1 bet"
-        num={6}
-        total={11}
+        meta={headerMeta}
+        num={slideNum}
+        total={totalSlides}
       />
 
       <div
@@ -127,9 +133,9 @@ export default function Slide06HomepagePrompt({
         {/* reasoning */}
         <ProtoSide>
           <ProtoSection title="Opportunity">
-            If Ideas 01 and 02 work inside the app, pushing the prompt box upstream
-            to the marketing homepage is the logical next step. Aha arrives before
-            signup, not after.
+            Only if Ideas 01 and 02 prove out in-app should we push the prompt box
+            upstream to the marketing homepage. That sequencing de-risks the
+            Type 1 bet before we spend compute at top-of-funnel.
           </ProtoSection>
           <ProtoSection title="Why this is Type 1">
             <ProtoBullets

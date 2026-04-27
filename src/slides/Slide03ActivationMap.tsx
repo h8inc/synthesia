@@ -77,7 +77,13 @@ const metrics: Record<Moment, MetricCell> = {
 
 const moments: Moment[] = ["setup", "aha", "habit"];
 
-export default function Slide03ActivationMap() {
+export default function Slide03ActivationMap({
+  slideNum = 3,
+  totalSlides = 11,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+} = {}) {
   // per-moment toggle — each column can be flipped independently
   const [state, setState] = useState<Record<Moment, "now" | "proposed">>({
     setup: "now",
@@ -96,8 +102,8 @@ export default function Slide03ActivationMap() {
       <SlideHeader
         eyebrow="Activation Map"
         meta="Setup · Aha · Habit — now vs proposed, in the framework's own format"
-        num={3}
-        total={11}
+        num={slideNum}
+        total={totalSlides}
       />
 
       <h2
@@ -135,17 +141,6 @@ export default function Slide03ActivationMap() {
         >
           {allProposed ? "Flip all back to now" : "Flip all to proposed"}
         </button>
-        <span
-          style={{
-            fontFamily: fonts.mono,
-            fontSize: 10,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: tokens.muted,
-          }}
-        >
-          Or click any column header to flip that moment
-        </span>
       </div>
 
       {/* 4-col grid: row-label + 3 moments */}

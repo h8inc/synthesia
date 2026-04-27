@@ -43,7 +43,25 @@ const funnelSteps = [
   "Prompt box → Generate → silently fails",
 ];
 
-export default function Slide02Problem() {
+/** Aligned 1:1 with `proposedSteps` — for right column + hover when mode is “proposed”. */
+const proposedFunnelLines = [
+  "Prompt & generate — aha in the first interaction",
+  "Video renders — value before heavy asks",
+  "Email, after the hook (not before)",
+  "Share to close the habit loop",
+  "At most one light question during render",
+  "Next prompt — compound the loop",
+];
+
+export default function Slide02Problem({
+  slideNum = 2,
+  totalSlides = 11,
+  hideHeader = false,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+  hideHeader?: boolean;
+} = {}) {
   const [mode, setMode] = useState<"current" | "proposed">("current");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
@@ -57,35 +75,27 @@ export default function Slide02Problem() {
   }, [hoveredId, activeSteps]);
 
   const displaySteps: Step[] =
-    mode === "current"
-      ? currentSteps
-      : [
-          ...proposedSteps,
-          ...Array.from({ length: 6 }).map((_, i) => ({
-            id: `removed-${i}`,
-            label: "—",
-            cost: "removed",
-            kind: "removed" as const,
-          })),
-        ];
+    mode === "current" ? currentSteps : proposedSteps;
 
   return (
     <>
-      <SlideHeader
-        eyebrow="Problem"
-        meta="The order of operations is upside down"
-        num={2}
-        total={11}
-      />
+      {!hideHeader && (
+        <SlideHeader
+          eyebrow="Problem"
+          meta="The order of operations is upside down"
+          num={slideNum}
+          total={totalSlides}
+        />
+      )}
 
       <div
-        className="grid gap-10"
+        className="grid gap-14"
         style={{ gridTemplateColumns: "1.65fr 1fr" }}
       >
         {/* LEFT — hero: OoO with headline, toggle, chevrons, tank, stats */}
         <div className="flex flex-col">
           <h2
-            className="mb-3"
+            className="mb-5"
             style={{
               fontFamily: fonts.serif,
               fontSize: "clamp(28px, 3.2vw, 42px)",
@@ -102,7 +112,7 @@ export default function Slide02Problem() {
           </h2>
 
           <p
-            className="mb-6"
+            className="mb-10"
             style={{
               fontFamily: fonts.serif,
               fontSize: "clamp(14px, 1.15vw, 16px)",
@@ -119,7 +129,7 @@ export default function Slide02Problem() {
           </p>
 
           {/* toggle + legend inline */}
-          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <div className="flex items-center justify-between mt-6 mb-8 flex-wrap gap-4">
             <div className="flex gap-2">
               <ToggleButton
                 active={mode === "current"}
@@ -139,89 +149,91 @@ export default function Slide02Problem() {
             <Legend />
           </div>
 
-          {/* chevrons */}
-          <LayoutGroup>
-            <motion.div
-              className="grid gap-[2px]"
-              style={{ gridTemplateColumns: "repeat(12, 1fr)" }}
-              layout
-            >
-              <AnimatePresence mode="popLayout">
-                {displaySteps.map((step, i) => (
-                  <Chevron
-                    key={step.id}
-                    step={step}
-                    index={i}
-                    hovered={hoveredId === step.id}
-                    onHover={setHoveredId}
-                  />
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          </LayoutGroup>
+          {/* chevrons + tank — grouped as one "chart" */}
+          <div className="py-2">
+            <LayoutGroup>
+              <motion.div
+                className="grid gap-[2px]"
+                style={{
+                  gridTemplateColumns: `repeat(${displaySteps.length}, minmax(0, 1fr))`,
+                }}
+                layout
+              >
+                <AnimatePresence mode="popLayout">
+                  {displaySteps.map((step, i) => (
+                    <Chevron
+                      key={step.id}
+                      step={step}
+                      index={i}
+                      hovered={hoveredId === step.id}
+                      onHover={setHoveredId}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </LayoutGroup>
 
-          {/* tank bar */}
-          <div className="mt-4">
-            <TankBar state={mode} hoverFill={runningEnergy} />
-          </div>
-
-          {/* start / end annotations */}
-          <div
-            className="mt-5 flex justify-between gap-3"
-            style={{
-              fontFamily: fonts.mono,
-              fontSize: 10,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}
-          >
-            <div
-              style={{
-                color: mode === "current" ? tokens.muted : tokens.accent,
-              }}
-            >
-              {mode === "current"
-                ? "Energy at start: full tank"
-                : "Aha first · tank filling from step 1"}
+            <div className="mt-7">
+              <TankBar state={mode} hoverFill={runningEnergy} />
             </div>
+
             <div
+              className="mt-5 flex justify-between gap-3"
               style={{
-                color: mode === "current" ? tokens.accent : tokens.muted,
+                fontFamily: fonts.mono,
+                fontSize: 10,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
               }}
-              className="text-right"
             >
-              {mode === "current"
-                ? "Aha buried at step 12 — empty tank"
-                : "Ask only what the product couldn't already infer"}
+              <div
+                style={{
+                  color: mode === "current" ? tokens.muted : tokens.accent,
+                }}
+              >
+                {mode === "current" ? "Start · full tank" : "Aha first · filling"}
+              </div>
+              <div
+                style={{
+                  color: mode === "current" ? tokens.accent : tokens.muted,
+                }}
+                className="text-right"
+              >
+                {mode === "current"
+                  ? "Aha at step 12 · empty"
+                  : "Ask only what's needed"}
+              </div>
             </div>
           </div>
 
           {/* stats — the "so what" */}
           <div
-            className="grid gap-6 pt-6 mt-8"
+            className="grid gap-10 pt-10 mt-12"
             style={{
-              gridTemplateColumns: "auto auto 1fr",
+              gridTemplateColumns: "1fr 1fr",
               borderTop: `1px solid ${tokens.rule}`,
               alignItems: "end",
             }}
           >
-            <Stat num="11" label="Asks before user can create" />
-            <Stat num="0" label="Value delivered pre-render" />
-            <div
-              style={{
-                fontFamily: fonts.serif,
-                fontSize: 14,
-                fontStyle: "italic",
-                color: tokens.ink,
-                lineHeight: 1.45,
-                borderLeft: `2px solid ${tokens.accent}`,
-                paddingLeft: 14,
-                maxWidth: 320,
-              }}
-            >
-              "Every step costs — nothing gives back. By the time they reach the
-              prompt box, the tank is empty."
-            </div>
+            {mode === "current" ? (
+              <>
+                <Stat num="11" label="Asks before user can create" />
+                <Stat num="0" label="Value delivered pre-render" />
+              </>
+            ) : (
+              <>
+                <Stat
+                  num="1"
+                  label="Aha (prompt) before heavy asks"
+                  numColor={tokens.insight}
+                />
+                <Stat
+                  num="2"
+                  label="Asks only after first value (email + 1Q)"
+                  numColor={tokens.insight}
+                />
+              </>
+            )}
           </div>
         </div>
 
@@ -238,57 +250,71 @@ export default function Slide02Problem() {
               color: tokens.muted,
             }}
           >
-            The funnel, observed
+            {mode === "current"
+              ? "The funnel, observed"
+              : "The proposed path, sketched"}
           </h3>
 
           <ol className="list-none p-0">
-            {funnelSteps.map((s, i) => {
-              const isLast = i === funnelSteps.length - 1;
-              // map list row to chevron id so hovering keeps tank-bar in sync
-              const idForRow = currentSteps[i]?.id ?? null;
-              const active = hoveredId === idForRow;
-              return (
-                <li
-                  key={i}
-                  onMouseEnter={() => {
-                    if (mode === "current" && idForRow) setHoveredId(idForRow);
-                  }}
-                  onMouseLeave={() => {
-                    if (mode === "current") setHoveredId(null);
-                  }}
-                  className="grid gap-[12px]"
-                  style={{
-                    gridTemplateColumns: "26px 1fr",
-                    padding: "8px 8px 8px 6px",
-                    borderBottom: isLast
-                      ? "none"
-                      : `1px dashed ${tokens.rule}`,
-                    fontSize: 12.5,
-                    lineHeight: 1.45,
-                    color: isLast ? tokens.accent : tokens.inkSoft,
-                    fontWeight: isLast ? 500 : 400,
-                    fontFamily: fonts.serif,
-                    background: active
-                      ? "rgba(139, 58, 46, 0.05)"
-                      : "transparent",
-                    transition: "background 0.15s ease",
-                    cursor: mode === "current" ? "default" : "default",
-                  }}
-                >
-                  <span
+            {(mode === "current" ? funnelSteps : proposedFunnelLines).map(
+              (s, i) => {
+                const list =
+                  mode === "current" ? funnelSteps : proposedFunnelLines;
+                const isLast = i === list.length - 1;
+                const idForRow =
+                  mode === "current"
+                    ? (currentSteps[i]?.id ?? null)
+                    : (proposedSteps[i]?.id ?? null);
+                const active = idForRow != null && hoveredId === idForRow;
+                const lastColor =
+                  mode === "current" ? tokens.accent : tokens.insight;
+                return (
+                  <li
+                    key={mode + String(i) + s}
+                    onMouseEnter={() => {
+                      if (idForRow) setHoveredId(idForRow);
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredId(null);
+                    }}
+                    className="grid gap-[12px]"
                     style={{
-                      fontFamily: fonts.mono,
-                      fontSize: 10,
-                      color: isLast ? tokens.accent : tokens.muted,
-                      paddingTop: 3,
+                      gridTemplateColumns: "26px 1fr",
+                      padding: "8px 8px 8px 6px",
+                      borderBottom: isLast
+                        ? "none"
+                        : `1px dashed ${tokens.rule}`,
+                      fontSize: 12.5,
+                      lineHeight: 1.45,
+                      color: isLast
+                        ? lastColor
+                        : tokens.inkSoft,
+                      fontWeight: isLast ? 500 : 400,
+                      fontFamily: fonts.serif,
+                      background: active
+                        ? mode === "current"
+                          ? "rgba(139, 58, 46, 0.05)"
+                          : "rgba(79, 70, 229, 0.06)"
+                        : "transparent",
+                      transition: "background 0.15s ease",
+                      cursor: "default",
                     }}
                   >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span>{s}</span>
-                </li>
-              );
-            })}
+                    <span
+                      style={{
+                        fontFamily: fonts.mono,
+                        fontSize: 10,
+                        color: isLast ? lastColor : tokens.muted,
+                        paddingTop: 3,
+                      }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span>{s}</span>
+                  </li>
+                );
+              }
+            )}
           </ol>
 
           <div
@@ -313,7 +339,15 @@ export default function Slide02Problem() {
   );
 }
 
-function Stat({ num, label }: { num: string; label: string }) {
+function Stat({
+  num,
+  label,
+  numColor = tokens.accent,
+}: {
+  num: string;
+  label: string;
+  numColor?: string;
+}) {
   return (
     <div className="flex flex-col gap-1">
       <div
@@ -323,7 +357,7 @@ function Stat({ num, label }: { num: string; label: string }) {
           fontWeight: 300,
           lineHeight: 1,
           letterSpacing: "-0.02em",
-          color: tokens.accent,
+          color: numColor,
           fontStyle: "italic",
         }}
       >
@@ -351,7 +385,7 @@ function Legend() {
   const items: Array<{ color: string; label: string }> = [
     { color: tokens.drain, label: "Ask — drains" },
     { color: tokens.gain, label: "Value — fills" },
-    { color: tokens.accent, label: "Aha" },
+    { color: tokens.insight, label: "Aha" },
   ];
   return (
     <div

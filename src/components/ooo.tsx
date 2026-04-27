@@ -4,8 +4,8 @@ import { tokens, fonts, type Step, type StepKind } from "../lib/tokens";
 const kindColors: Record<StepKind, { bg: string; fg: string }> = {
   ask: { bg: tokens.drain, fg: "#fff" },
   gain: { bg: tokens.gain, fg: "#fff" },
-  aha: { bg: tokens.accent, fg: "#fff" },
-  "aha-missed": { bg: tokens.accent, fg: "#fff" },
+  aha: { bg: tokens.insight, fg: "#fff" },
+  "aha-missed": { bg: tokens.insight, fg: "#fff" },
   removed: { bg: "transparent", fg: tokens.muted },
 };
 
@@ -23,6 +23,7 @@ export function Chevron({
   const colors = kindColors[step.kind];
   const isFirst = index === 0;
   const isRemoved = step.kind === "removed";
+  const isAhaMissed = step.kind === "aha-missed";
 
   return (
     <motion.div
@@ -54,6 +55,10 @@ export function Chevron({
         border: isRemoved ? `1px dashed ${tokens.rule}` : "none",
         cursor: isRemoved ? "default" : "pointer",
         filter: hovered && !isRemoved ? "brightness(1.08)" : "none",
+        opacity: isAhaMissed ? 0.92 : 1,
+        boxShadow: isAhaMissed
+          ? "inset 0 0 0 1px rgba(255,255,255,0.35), inset 0 0 0 2px rgba(0,0,0,0.12)"
+          : undefined,
       }}
     >
       {step.kind === "aha" && (
@@ -64,12 +69,29 @@ export function Chevron({
             fontFamily: fonts.mono,
             fontSize: 10,
             letterSpacing: "0.12em",
-            color: tokens.accent,
+            color: tokens.insight,
             background: tokens.bg,
             padding: "2px 6px",
           }}
         >
           AHA
+        </div>
+      )}
+      {isAhaMissed && (
+        <div
+          className="absolute left-1/2 -translate-x-1/2"
+          style={{
+            top: -22,
+            fontFamily: fonts.mono,
+            fontSize: 9,
+            letterSpacing: "0.1em",
+            color: tokens.insight,
+            background: tokens.bg,
+            padding: "2px 6px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          AHA · dead
         </div>
       )}
       <span style={{ fontSize: 9, opacity: isRemoved ? 1 : 0.9, marginBottom: 2 }}>

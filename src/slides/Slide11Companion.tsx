@@ -6,9 +6,55 @@ import { SlideHeader } from "../components/SlideShell";
 const SYNTH_BLUE = "#4f46e5";
 
 const bubbleLines = [
-  "What video do you want to make?",
-  "Turn your last meeting into a 2-minute summary.",
-  "Record this quarter's update — I'll do the talking.",
+  "Walk these new specs through to engineering.",
+  "90-second sprint update for the team.",
+  "Explain this architecture decision once.",
+];
+
+type Persona = {
+  pair: string;
+  uc: string;
+  replaces: string;
+  stitch: string;
+  measuredBy: string;
+};
+
+const PERSONAS: Persona[] = [
+  {
+    pair: "DESIGNER → ENG",
+    uc: "Walk these specs through",
+    replaces: "Loom, Slack walls of text",
+    stitch: "Recorder + Voice clone",
+    measuredBy: "Eng time saved per spec",
+  },
+  {
+    pair: "PM → TEAM",
+    uc: "90-second sprint update",
+    replaces: "Slack huddles, all-hands, PowerPoint",
+    stitch: "Chat + Avatar + Voice",
+    measuredBy: "Meeting hours displaced",
+  },
+  {
+    pair: "ENG → ENG",
+    uc: "Architecture decision, once",
+    replaces: "Repeated 1:1s, Confluence pages",
+    stitch: "Recorder + AI cut",
+    measuredBy: "Engineer hours recovered",
+  },
+  {
+    pair: "SALES → BUYER",
+    uc: "1 record → N personalised sends",
+    replaces: "Vidyard, Sendspark, Salesloft video",
+    stitch: "Chat + Avatar + API + Voice clone",
+    measuredBy: "Reply rate / pipeline",
+  },
+  {
+    pair: "SUPPORT → USER",
+    uc: "Personalised reply video",
+    replaces: "Zendesk text macros, screen-share",
+    stitch: "Recorder + Chat + Avatar",
+    measuredBy: "TBD — likely time-to-resolution",
+  },
 ];
 
 const DOCK_WIDTH = 640;
@@ -18,7 +64,13 @@ const WALK_PADDING = 18;
 const WALK_DURATION = 7; // seconds to cross the dock in one direction
 const TURN_DURATION = 0.6; // pause/turn beat at each border
 
-export default function Slide11Companion() {
+export default function Slide11Companion({
+  slideNum = 11,
+  totalSlides = 11,
+}: {
+  slideNum?: number;
+  totalSlides?: number;
+} = {}) {
   const [bubbleIdx, setBubbleIdx] = useState(0);
 
   useEffect(() => {
@@ -33,16 +85,16 @@ export default function Slide11Companion() {
     <>
       <SlideHeader
         eyebrow="Vision"
-        meta="Zooming out — past the brief"
-        num={11}
-        total={11}
+        meta="Why this lands and expands"
+        num={slideNum}
+        total={totalSlides}
       />
 
       <div className="flex-1 flex flex-col" style={{ paddingTop: 4 }}>
         {/* headline + subhead */}
         <div style={{ maxWidth: 980 }}>
           <h2
-            className="mb-4"
+            className="mb-6"
             style={{
               fontFamily: fonts.serif,
               fontSize: "clamp(32px, 3.8vw, 50px)",
@@ -50,15 +102,15 @@ export default function Slide11Companion() {
               letterSpacing: "-0.025em",
               lineHeight: 1.05,
               color: tokens.ink,
+              width: "100%",
             }}
           >
-            One click. One prompt. One video.
-            <br />
+        
             The{" "}
             <em style={{ color: tokens.accent, fontStyle: "italic" }}>
               retention surface
             </em>{" "}
-            we haven't built yet.
+            that compounds inside every logo.
           </h2>
           <p
             style={{
@@ -66,39 +118,42 @@ export default function Slide11Companion() {
               fontSize: 15,
               lineHeight: 1.55,
               color: tokens.inkSoft,
-              maxWidth: 760,
+              maxWidth: 820,
             }}
           >
-            If Ideas 01 and 03 prove the thesis, this is where the north star
-            points. A tiny Synthesia avatar — the product demonstrating itself —
-            that lives on the user's desktop, one click away from their next
-            video.
+            Half my product-design day is 2-minute Slack rambles to engineers
+            and PMs. Every team has its version of that loss. The desktop
+            companion turns those rambles into one-click async videos — and
+            quietly turns every new role inside an account into ARPA that
+            compounds.
           </p>
         </div>
 
-        {/* three callouts */}
+        <PersonaStrip />
+
+        {/* three callouts — wedge / engine / moat */}
         <div
           className="grid gap-4"
           style={{
             gridTemplateColumns: "repeat(3, 1fr)",
-            marginTop: 28,
+            marginTop: 8,
             marginBottom: 18,
           }}
         >
           <Callout
-            label="WHAT"
+            label="THE WEDGE"
             delay={0.4}
-            body="Always-on Synthesia companion. One click from desktop to a rendering video. The avatar is Synthesia's own tech — it walks the walk."
+            body="Synthesia already ships the parts — Chat (prompt-to-video), Recorder, Avatars, Voice clones, brand kit. Each row above is a different stitch of the same parts. Nothing new to build — just a different room to put them in."
           />
           <Callout
-            label="WHY"
+            label="THE ENGINE"
             delay={0.55}
-            body="The retention metric is frequency. Frequency means trigger reduction. Seven steps → three steps → one. Every collapsed step compounds into LTV."
+            body="Each new team adds its own ROI metric to the same contract. L&D minutes were the first. Pipeline-attributed credit, meeting-hours-displaced credit, time-to-resolution credit stack on top. One logo, five buyers, five reasons to renew."
           />
           <Callout
-            label="WHEN"
+            label="THE MOAT"
             delay={0.7}
-            body="After 01 and 03 ship. This is the north-star surface, not a quarter-one bet. Earned by data, not assumed."
+            body="Once two or more teams in the same account use Synthesia daily, the per-account assets — voice clones, brand kit, prior scripts — become the switching cost. Loom can take one row. Vidyard can take another. Nothing has the per-account memory across all five."
           />
         </div>
 
@@ -111,7 +166,6 @@ export default function Slide11Companion() {
           style={{
             borderLeft: `3px solid ${tokens.accent}`,
             background: "rgba(139, 58, 46, 0.03)",
-            maxWidth: 1100,
           }}
         >
           <div
@@ -128,11 +182,14 @@ export default function Slide11Companion() {
             >
               Honest risks to pressure-test:
             </strong>{" "}
-            compute cost is worse than Idea 03 (always-on inference). Enterprise
-            IT won't install Mac apps easily — web-based equivalent (browser
-            extension, Slack app, workspace widget) is likely the real v1. Out
-            of the take-home brief by design — this is a retention-stage vision,
-            not a sign-up experiment.
+            each row has its own incumbent — Vidyard / Sendspark for Sales,
+            Loom for Eng, Zendesk for Support. Synthesia wins per-row on
+            avatar + voice clone, loses where workflow integration is deeper
+            than the avatar's value-add. Governance has to be solved before
+            any of these ship to Enterprise — branded avatar publishing needs
+            review, watermarking, time-limited shares. Compute cost is worse
+            than Idea 03 (always-on inference). Out of the take-home brief by
+            design — retention-stage vision, not a sign-up experiment.
           </div>
         </motion.div>
 
@@ -148,9 +205,9 @@ export default function Slide11Companion() {
 type ChatStage = "prompt" | "generating" | "done";
 
 const QUICK_PROMPTS = [
-  "Turn my last meeting into a 2-min summary",
-  "Record this quarter's update — you do the talking",
-  "Explain our new feature to customers",
+  "Walk these new specs through to engineering",
+  "90-second sprint update for the team",
+  "Explain this architecture decision once",
 ];
 
 function DockHero({
@@ -1422,6 +1479,117 @@ function AvatarFigure({ phase }: { phase: number }) {
         <circle cx="40.2" cy="46" r="2" fill="#d9b896" />
       </g>
     </svg>
+  );
+}
+
+/* ---------- Persona expansion strip ---------- */
+
+function PersonaStrip() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, delay: 0.25 }}
+      className="flex"
+      style={{
+        marginTop: 24,
+        marginBottom: 22,
+        borderTop: `1px solid ${tokens.rule}`,
+        borderBottom: `1px solid ${tokens.rule}`,
+        padding: "14px 0",
+      }}
+    >
+      {PERSONAS.map((p, i) => (
+        <div
+          key={p.pair}
+          style={{
+            flex: 1,
+            padding: "0 14px",
+            borderRight:
+              i < PERSONAS.length - 1
+                ? `1px dashed ${tokens.rule}`
+                : "none",
+          }}
+        >
+          {/* pair label */}
+          <div
+            style={{
+              fontFamily: fonts.mono,
+              fontSize: 9.5,
+              letterSpacing: "0.14em",
+              color: tokens.accent,
+              marginBottom: 6,
+            }}
+          >
+            {p.pair}
+          </div>
+
+          {/* use case (italic, in quotes) */}
+          <div
+            style={{
+              fontFamily: fonts.serif,
+              fontSize: 12.5,
+              fontStyle: "italic",
+              color: tokens.inkSoft,
+              lineHeight: 1.4,
+              marginBottom: 10,
+              paddingBottom: 10,
+              borderBottom: `1px solid ${tokens.rule}`,
+            }}
+          >
+            “{p.uc}”
+          </div>
+
+          {/* metadata: replaces / stitch / measured by */}
+          <PersonaMetaRow label="REPLACES" value={p.replaces} />
+          <PersonaMetaRow label="STITCH" value={p.stitch} />
+          <PersonaMetaRow
+            label="MEASURED BY"
+            value={p.measuredBy}
+            isTBD={p.measuredBy.startsWith("TBD")}
+          />
+        </div>
+      ))}
+    </motion.div>
+  );
+}
+
+function PersonaMetaRow({
+  label,
+  value,
+  isTBD,
+}: {
+  label: string;
+  value: string;
+  isTBD?: boolean;
+}) {
+  return (
+    <div style={{ marginBottom: 6 }}>
+      <div
+        style={{
+          fontFamily: fonts.mono,
+          fontSize: 8.5,
+          letterSpacing: "0.12em",
+          color: tokens.inkSoft,
+          opacity: 0.6,
+          marginBottom: 1,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontFamily: fonts.serif,
+          fontSize: 10.5,
+          lineHeight: 1.3,
+          color: tokens.inkSoft,
+          opacity: isTBD ? 0.6 : 1,
+          fontStyle: isTBD ? "italic" : "normal",
+        }}
+      >
+        {value}
+      </div>
+    </div>
   );
 }
 
